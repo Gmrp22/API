@@ -74,8 +74,19 @@ export class PreconditionFailedError extends AppError {
 export class ValidationError extends AppError {
     constructor(errors) {
         super('Validation error', 422);
-        this.errors = errors;
+        this.errors = this.formatErrors(errors);
     }
+  formatErrors(zodErrors) {
+    if (!Array.isArray(zodErrors) || !zodErrors[0]?.path) {
+        return [];
+    }
+    
+    return zodErrors.map(err => ({
+        field: err.path.join('.'),  // ← join por si hay anidamiento
+        message: err.message
+        // user.profile.email en vez de solo user
+    }));
+}
 }
 
 export class AuthenticationError extends AppError {

@@ -5,15 +5,18 @@ import { prisma } from '../utils/prisma.js';
 const SALT_ROUNDS = 10;
 const JWT_SECRET = process.env.JWT_SECRET;
 
-export async function registerUser(email, password) {
+export async function registerUser(data) {
+    const {email,password,name} = data
     const exists =  await prisma.user.findUnique({ where: { email } });
     if (exists) {
-        throw new PrismaUniqueConstraintError('User already exists');
+        const error = new Error('User already exists');
+        error.statusCode = 409;
+        throw error
     }
     const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
-    const user = await prisma.user.create({
-        data: { email, password: hashedPassword }
+    const newUser = await prisma.user.create({
+        data: { email, password: hashedPassword, name:name }
     });
-    return { id: user.id, email: user.email };
+    return { id: newUser.id, email: newUser.email };
 }
 
