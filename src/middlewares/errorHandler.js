@@ -12,24 +12,20 @@ function errorHandler(err, req, res, next) {
     errors: err.errors
   }, 'Error occurred');
   
-  const status = err.statusCode || 500;
-  const message = status >= 500 
-  ? 'Internal Server Error' 
-  : err.message;
-  
-  const response = {
-    error: message
-  };
-
-  if (err.errors && status < 500) {
-    response.error = err.errors;
+  if (err.isOperational) {
+    return res.status(err.statusCode).json({
+      status: err.statusCode,
+      error: err.errors || err.message
+    });
+    
   }
+
+
   
  // if (process.env.NODE_ENV === 'development') {
    // response.stack = err.stack;
  // }
-  
-  res.status(status).json(response);
+ res.status(500).json({ status: 500, error: 'Internal Server Error' });
 }
 
 export default errorHandler;

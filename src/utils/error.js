@@ -1,48 +1,49 @@
 class AppError extends Error {
     constructor(message, statusCode) {
         super(message);
+        this.isOperational = true;
         this.statusCode = statusCode;
     }
 }
 
 export class ConflictError extends AppError {
-    constructor(message) {
+    constructor(message = 'Resource already exists') {
         super(message, 409);
     }
 }
 
 export class NotFoundError extends AppError {
-    constructor(message) {
+    constructor(message = 'Resource not found') {
         super(message, 404);
     }
 }
 
 export class UnauthorizedError extends AppError {
-    constructor(message) {
+    constructor(message = 'Unauthorized') {
         super(message, 401);
     }
 }
 
 export class BadRequestError extends AppError {
-    constructor(message) {
+    constructor(message = 'Bad request') {
         super(message, 400);
     }
 }
 
 export class InternalServerError extends AppError {
-    constructor(message) {
+    constructor(message = 'Internal server error') {
         super(message, 500);
     }
 }
 
 export class ForbiddenError extends AppError {
-    constructor(message) {
+    constructor(message = 'Forbidden') {
         super(message, 403);
     }
 }
 
 export class NotImplementedError extends AppError {
-    constructor(message) {
+    constructor(message = 'Not implemented') {
         super(message, 501);
     }
 }
@@ -90,18 +91,18 @@ export class ValidationError extends AppError {
 }
 
 export class AuthenticationError extends AppError {
-    constructor(message) {
+    constructor(message='Authentication failed') {
         super(message, 401);
     }
 }
 
 export class AuthorizationError extends AppError {
-    constructor(message) {
+    constructor(message='Authorization failed') {
         super(message, 403);
     }
 }
 
-
+//500
 export class PrismaConnectionError extends AppError {
     constructor(message) {
         super(message, 500);

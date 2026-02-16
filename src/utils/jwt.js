@@ -1,12 +1,22 @@
 import jwt from 'jsonwebtoken';
 
-export async function generateToken(payload) {
-  return  await jwt.sign(payload, process.env.JWT_SECRET, { 
-    expiresIn: '1d' 
-  });
-
+export  function generateToken(payload) {
+  try {
+    return jwt.sign(payload, process.env.JWT_SECRET, { 
+      expiresIn: '1d' 
+    });
+  } catch (error) {
+    throw new Error('Token generation failed: ' + error.message);
+  }
 }
 
-export async function verifyToken(token) {
-  return await jwt.verify(token, process.env.JWT_SECRET);
+export  function verifyToken(token) {
+  try {
+    return jwt.verify(token, process.env.JWT_SECRET);
+  } catch (error) {
+    if (error.name === 'JsonWebTokenError') {
+      throw new AuthenticationError('Invalid token');
+    }
+    throw new Error('Token verification failed: ' + error.message);
+  }
 }
