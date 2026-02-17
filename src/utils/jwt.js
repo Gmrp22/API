@@ -1,16 +1,16 @@
 import jwt from 'jsonwebtoken';
-
-export  function generateToken(payload) {
+import { AuthenticationError } from './error.js';
+export function generateToken(payload) {
   try {
-    return jwt.sign(payload, process.env.JWT_SECRET, { 
-      expiresIn: '1d' 
+    return jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: '1d'
     });
   } catch (error) {
     throw new Error('Token generation failed: ' + error.message);
   }
 }
 
-export  function verifyToken(token) {
+export function verifyToken(token) {
   try {
     return jwt.verify(token, process.env.JWT_SECRET);
   } catch (error) {
