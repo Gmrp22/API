@@ -1,24 +1,21 @@
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 import { prisma } from '../utils/prisma.js';
-import { ConflictError, NotFoundError, UnauthorizedError } from '../utils/error.js';
+import { UnauthorizedError, ConflictError } from '../utils/error.js';
+
 const SALT_ROUNDS = 10;
-const JWT_SECRET = process.env.JWT_SECRET;
 
 export async function registerUser(data) {
     const { email, password, name } = data
     try {
-        const exists = await prisma.user.findUnique({ where: { email } }); //race condition
-        if (exists) {
-            throw new UnauthorizedError('Invalid credentials');
-        }
-
         const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
         const newUser = await prisma.user.create({
             data: { email, password: hashedPassword, name: name }
         });
-        return { id: newUser.id, email: newUser.email };
+        return { user: { id: newUser.id, email: newUser.email }, role: newUser.role };
     } catch (error) {
+        if (error.code === 'P2002') {
+            throw new UnauthorizedError('Invalid credentials');
+        }
         if (error.isOperational) {
             throw error;
         }
@@ -37,7 +34,7 @@ export async function loginUser(data) {
         if (!isPasswordValid) {
             throw new UnauthorizedError('Invalid credentials');
         }
-        return { id: user.id, email: user.email };
+        return { user: { id: user.id, email: user.email }, role: user.role };
     } catch (error) {
         if (error.isOperational) {
             throw error;
