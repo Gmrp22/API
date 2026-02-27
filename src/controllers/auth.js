@@ -1,18 +1,25 @@
-import { registerUser } from "../services/auth.service.js";
+import { registerUser, loginUser } from "../services/auth.service.js";
 import { generateToken } from "../utils/jwt.js";
 
 
-export async function register(req, res) {
+export async function register(req, res, next) {
   try {
-    const { email, password } = req.validatedData;
-    const user = await registerUser(email, password);
-    const token = await generateToken({ id: user.id, email: user.email });
+    const data = req.validatedData;
+    const { user, role } = await registerUser(data);
+    const token = generateToken({ id: user.id, role: role });
     res.status(201).json({ message: 'User registered successfully', user, token });
   } catch (error) {
     next(error);
   }
 }
 
-export function login(req, res) {
-  res.json({ message: 'User logged in successfully' });
+export async function login(req, res, next) {
+  try {
+    const data = req.validatedData;
+    const { user, role } = await loginUser(data);
+    const token = generateToken({ id: user.id, role: role });
+    res.status(200).json({ message: 'User logged in successfully', user, token });
+  } catch (error) {
+    next(error);
+  }
 }

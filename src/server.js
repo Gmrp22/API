@@ -1,9 +1,9 @@
 import http from 'http';
-import 'dotenv/config';
+import { config } from './config/env.js';
 import app from './app.js';
 import { prisma } from './utils/prisma.js';
 
-const PORT = process.env.PORT || 3000;
+const PORT = config.port;
 
 const server = http.createServer(app);
 

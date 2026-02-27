@@ -1,23 +1,24 @@
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, vi, beforeAll } from 'vitest';
+
+vi.mock('../config/env.js', () => ({
+  config: { jwtSecret: 'test-secret' },
+}));
+
 import { generateToken, verifyToken } from './jwt.js';
 
-beforeAll(() => {
-  process.env.JWT_SECRET = 'test-secret';
-});
-
 describe('jwt utils', () => {
-  it('generates a valid token', async () => {
-    const token = await generateToken({ userId: 1 });
+  it('generates a valid token', () => {
+    const token = generateToken({ userId: 1 });
     expect(typeof token).toBe('string');
   });
 
-  it('verifies a valid token and returns the payload', async () => {
-    const token = await generateToken({ userId: 42 });
-    const payload = await verifyToken(token);
+  it('verifies a valid token and returns the payload', () => {
+    const token = generateToken({ userId: 42 });
+    const payload = verifyToken(token);
     expect(payload.userId).toBe(42);
   });
 
-  it('throws on invalid token', async () => {
-    await expect(verifyToken('invalid.token.here')).rejects.toThrow();
+  it('throws on invalid token', () => {
+    expect(() => verifyToken('invalid.token.here')).toThrow();
   });
 });

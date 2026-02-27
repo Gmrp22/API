@@ -1,9 +1,16 @@
 import { Router } from 'express';
 import { register, login } from '../controllers/auth.js';
-import { validateRegister } from '../middlewares/zodValidator.js';
-const router = Router();
+import validate from '../middlewares/zodValidator.js';
+import { RegisterSchema, LoginSchema } from '../schema/zodValidator.js';
+import jwtValidator from '../middlewares/jwtValidator.js';
+import getUser from '../controllers/user.js';
+const publicRouter = Router();
+const privateRouter = Router();
 
-router.post('/register', validateRegister, register);
-router.post('/login', login);
+publicRouter.post('/register', validate(RegisterSchema), register);
+publicRouter.post('/login', validate(LoginSchema), login);
 
-export default router;
+
+privateRouter.get('/user', jwtValidator, getUser);
+
+export { publicRouter, privateRouter };
