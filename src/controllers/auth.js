@@ -1,6 +1,5 @@
 import { registerUser } from "../services/auth.service.js";
 import { generateToken } from "../utils/jwt.js";
-import logger from "../utils/pino.js";
 
 
 export async function register(req, res) {

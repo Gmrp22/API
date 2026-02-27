@@ -1,21 +1,21 @@
 import logger from '../utils/pino.js';
 
-function errorHandler(err, req, res, next) {
+function errorHandler(err, req, res) {
   // Debug en desarrollo
   if (process.env.NODE_ENV === 'development') {
     console.log('🔴 ERROR COMPLETO:', err);
   }
-  
+
   // Log estructurado para producción
-  logger.error({ 
+  logger.error({
     message: err.message,
     statusCode: err.statusCode,
     errors: err.errors
   }, 'Error occurred');
-  
+
   const status = err.statusCode || 500;
   const message = err.message || 'Internal Server Error';
-  
+
   const response = {
     error: message
   };
@@ -23,11 +23,11 @@ function errorHandler(err, req, res, next) {
   if (err.errors) {
     response.errors = err.errors;
   }
-  
+
   if (process.env.NODE_ENV === 'development') {
     response.stack = err.stack;
   }
-  
+
   res.status(status).json(response);
 }
 
