@@ -1,16 +1,17 @@
 import { PrismaClient } from '@prisma/client';
 import pg from 'pg';
 import { PrismaPg } from '@prisma/adapter-pg';
-import { config } from '../config/env.js';
+import 'dotenv/config';
 
 const pool = new pg.Pool({
-  connectionString: config.databaseUrl,
-  ssl: config.nodeEnv === 'production'
-    ? { rejectUnauthorized: true }
-    : false,
-  max: 5,
-  idleTimeoutMillis: 10000
-});
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.NODE_ENV === 'production'
+    ? { rejectUnauthorized: true }   // Producción: verificar
+    : false,                           // Desarrollo: sin SSL
+  max: 5, // Límite de conexiones en el pool
+  idleTimeoutMillis: 10000, // 30 segundos
+}
+);
 const adapter = new PrismaPg(pool);
 
 export const prisma = new PrismaClient({ adapter });
